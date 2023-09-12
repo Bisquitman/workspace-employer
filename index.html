@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Work Space | Найди работу своей мечты</title>
+  <link rel="preload" href="./fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin>
+  <!-- Favicons -->
+  <link rel="apple-touch-icon" sizes="180x180" href="./img/favicons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="./img/favicons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="./img/favicons/favicon-16x16.png">
+  <link rel="manifest" href="./img/favicons/site.webmanifest">
+  <link rel="mask-icon" href="./img/favicons/safari-pinned-tab.svg" color="#5bbad5">
+  <link rel="shortcut icon" href="./img/favicons/favicon.ico">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="msapplication-config" content="./img/favicons/browserconfig.xml">
+  <meta name="theme-color" content="#ffffff">
+  <!-- Favicons -->
+  <link href="./css/style.css" rel="stylesheet">
+  <script src="./js/choices.min.js" defer></script>
+  <script src="./js/script.js" defer></script>
+</head>
+
+<body>
+  <header class="header">
+    <div class="container header__container">
+      <img class="header__logo" src="./img/logo.svg" alt="Логотип сайта Work Space" width="137" height="24">
+      <a class="header__link btn" href="#vacancies">Посмотреть вакансии</a>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="hero">
+      <div class="container hero__container">
+        <h1 class="hero__title" aria-label="Найди работу своей мечты">
+          Найди&nbsp;работу <span class="blue-text">своей&nbsp;мечты</span>
+        </h1>
+      </div>
+    </section>
+
+    <div class="vacancies" id="vacancies">
+      <div class="container vacancies__container">
+        <button class="vacancies__filter-btn">
+          Фильтр<span>
+            <svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10 14L14 8H6L10 14Z" fill="currentColor" />
+            </svg>
+          </span>
+        </button>
+
+        <section class="vacancies__filter filter">
+          <h2 class="filter__title">Фильтр</h2>
+
+          <form class="filter__form">
+            <fieldset class="filter__fieldset">
+              <legend class="filter__legend">Город</legend>
+
+              <select class="filter__select" name="city" id="city">
+              </select>
+            </fieldset>
+
+            <fieldset class="filter__fieldset">
+              <legend class="filter__legend">Заработная плата</legend>
+
+              <div class="filter__range">
+                <input class="filter__input" type="number" name="pay-from" placeholder="от">
+                <input class="filter__input" type="number" name="pay-to" placeholder="до">
+              </div>
+            </fieldset>
+
+            <div class="filter__checkboxes">
+              <fieldset class="filter__fieldset">
+                <legend class="filter__legend">Формат</legend>
+
+                <label class="filter__label checkbox">
+                  <input class="checkbox__input" type="checkbox" name="format" value="офис">
+                  Офис
+                </label>
+
+                <label class="filter__label checkbox">
+                  <input class="checkbox__input" type="checkbox" name="format" value="удаленный">
+                  Удаленный
+                </label>
+
+                <label class="filter__label checkbox">
+                  <input class="checkbox__input" type="checkbox" name="format" value="гибкий">
+                  Гибкий
+                </label>
+              </fieldset>
+
+              <fieldset class="filter__fieldset">
+                <legend class="filter__legend">Опыт работы</legend>
+
+                <label class="filter__label checkbox">
+                  <input class="checkbox__input" type="checkbox" name="experience" value="не важно">
+                  Не важно
+                </label>
+
+                <label class="filter__label checkbox">
+                  <input class="checkbox__input" type="checkbox" name="experience" value="без опыта">
+                  Без опыта
+                </label>
+
+                <label class="filter__label checkbox">
+                  <input class="checkbox__input" type="checkbox" name="experience" value="от 1 года до 3-х лет">
+                  От 1 года до 3-х лет
+                </label>
+
+                <label class="filter__label checkbox">
+                  <input class="checkbox__input" type="checkbox" name="experience" value="от 3-х лет">
+                  От 3-х лет
+                </label>
+              </fieldset>
+
+              <fieldset class="filter__fieldset">
+                <legend class="filter__legend">Занятость</legend>
+
+                <label class="filter__label checkbox">
+                  <input class="checkbox__input" type="checkbox" name="type" value="полная">
+                  Полная
+                </label>
+
+                <label class="filter__label checkbox">
+                  <input class="checkbox__input" type="checkbox" name="type" value="частичная">
+                  Частичная
+                </label>
+
+                <label class="filter__label checkbox">
+                  <input class="checkbox__input" type="checkbox" name="type" value="стажировка">
+                  Стажировка
+                </label>
+
+                <label class="filter__label checkbox">
+                  <input class="checkbox__input" type="checkbox" name="type" value="проектная работа">
+                  Проектная работа
+                </label>
+              </fieldset>
+            </div>
+
+            <div class="filter__buttons">
+              <button class="filter__form-submit btn" type="submit">Применить</button>
+              <button class="filter__form-reset" type="reset">Очистить</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="vacancies__cards cards">
+          <h2 class="cards__title visually-hidden">Список вакансий</h2>
+
+          <ul class="cards__list">
+            <!-- Сюда карточки рендерятся из JS -->
+          </ul>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__container">
+      <img class="logo footer__logo" src="./img/footer-logo.svg" alt="Логотип сайта Work Space" width="137" height="24">
+
+      <p class="footer__copyright">&copy;&nbsp;Work Space, 2023</p>
+
+      <ul class="footer__developer">
+        <li class="footer__developer-item">
+          Designer: <a class="footer__developer-link" href='https://t.me/Mrshmallowww' target='_blank'
+            rel="noopener noreferrer">Anastasia Ilina</a>
+        </li>
+        <li class="footer__developer-item">
+          Developer: <a class="footer__developer-link" href='https://github.com/Bisquitman/workspace' target='_blank'
+            rel="noopener noreferrer">Bisquitman</a>
+        </li>
+      </ul>
+    </div>
+  </footer>
+</body>
+
+</html>
