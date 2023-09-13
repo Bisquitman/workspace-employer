@@ -26,7 +26,7 @@
   <header class="header">
     <div class="container header__container">
       <a class="header__logo-link" href="/"><img class="header__logo" src="./img/logo.svg" alt="Логотип сайта Work Space" width="137" height="24"></a>
-      <a class="header__link btn" href="#vacancies">Посмотреть вакансии</a>
+      <a class="header__link btn" href="./index.html#vacancies">Посмотреть вакансии</a>
     </div>
   </header>
 
@@ -38,12 +38,12 @@
         <form class="employer__form">
           <div class="employer__file file">
             <div class="file__wrap-preview">
-              <img class="file__preview" src="" alt="">
+              <img class="file__preview" src="./img/no-logo.jpg" alt="">
             </div>
 
             <div class="file__wrap-btn">
-              <label class="file__label" for="logo">+ загрузить лого</label>
-              <input class="file__input" type="file" name="logo" id="logo" accept="image/png, image/jpeg">
+              <label class="file__label btn" for="logo">+ загрузить лого</label>
+              <input class="file__input" type="file" name="logo" id="logo" accept="image/png, image/jpeg" required>
             </div>
           </div>
 
@@ -74,9 +74,9 @@
             </div>
           </fieldset>
 
-          <fieldset class="employer__fieldset employer__fieldset_textarea">
+          <fieldset class="employer__fieldset">
             <label class="employer__label" for="description">Описание вакансии</label>
-            <textarea class="employer__textarea" name="description" id="description" placeholder="Добавьте всю необходимую для соискателя информацию"></textarea>
+            <textarea class="employer__textarea employer__input" name="description" id="description" placeholder="Добавьте всю необходимую для соискателя информацию"></textarea>
           </fieldset>
 
           <div class="employer__radiobuttons">
