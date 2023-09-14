@@ -594,6 +594,7 @@ template {
     right: 10px;
     top: 50%;
     -webkit-transform: translateY(-50%);
+        -ms-transform: translateY(-50%);
             transform: translateY(-50%);
   }
   [dir=rtl] .choices__list--dropdown .choices__item--selectable, [dir=rtl] .choices__list[aria-expanded] .choices__item--selectable {
@@ -1084,6 +1085,7 @@ fieldset {
 .choices[data-type*=select-one].is-open::after {
   margin-top: 0;
   -webkit-transform: rotate(-180deg);
+      -ms-transform: rotate(-180deg);
           transform: rotate(-180deg);
 }
 .choices__list--single {
@@ -1239,8 +1241,10 @@ fieldset {
   left: 0;
   background-color: #171717;
   -webkit-transform: scaleX(0);
+      -ms-transform: scaleX(0);
           transform: scaleX(0);
   -webkit-transform-origin: bottom right;
+      -ms-transform-origin: bottom right;
           transform-origin: bottom right;
   -webkit-transition: background-color 0.2s, -webkit-transform 0.2s;
   transition: background-color 0.2s, -webkit-transform 0.2s;
@@ -1252,8 +1256,10 @@ fieldset {
 }
 .footer__developer-link:hover::after {
   -webkit-transform-origin: bottom left;
+      -ms-transform-origin: bottom left;
           transform-origin: bottom left;
   -webkit-transform: scaleX(1);
+      -ms-transform: scaleX(1);
           transform: scaleX(1);
   background-color: #a6adff;
 }
@@ -1608,12 +1614,16 @@ fieldset {
   transition: box-shadow 0.3s;
   transition: box-shadow 0.3s, -webkit-box-shadow 0.3s;
 }
+.radio__input.just-validate-error-field {
+  outline: none !important;
+}
 .radio__input::after {
   content: "";
   position: absolute;
   top: 50%;
   left: 50%;
   -webkit-transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
           transform: translate(-50%, -50%);
   display: block;
   width: 20%;
@@ -1757,6 +1767,7 @@ fieldset {
   }
   .vacancies__filter-btn_active span {
     -webkit-transform: rotate(-180deg);
+        -ms-transform: rotate(-180deg);
             transform: rotate(-180deg);
   }
   .vacancies__filter-btn:hover {
@@ -1781,6 +1792,7 @@ fieldset {
   .filter__title {
     position: fixed;
     -webkit-transform: scale(0);
+        -ms-transform: scale(0);
             transform: scale(0);
   }
   .filter__input {
@@ -1881,6 +1893,7 @@ fieldset {
     bottom: 0;
     left: 50%;
     -webkit-transform: translateX(-50%);
+        -ms-transform: translateX(-50%);
             transform: translateX(-50%);
     background-position: bottom;
   }
