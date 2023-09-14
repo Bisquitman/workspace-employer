@@ -49,14 +49,18 @@ const getData = async (url, cbSuccess, cbError) => {
 
 const createCard = (vacancy) => `
   <article class="vacancy" tabindex="0" data-id=${vacancy.id}>
-    <img class="vacancy__img" src="${API_URL}/${vacancy.logo}" alt="Логотип компании ${vacancy.company}" height="44">
+    <img class="vacancy__img" src="${API_URL}/${
+  vacancy.logo
+}" alt="Логотип компании ${vacancy.company}" height="44">
 
     <p class="vacancy__company">${vacancy.company}</p>
 
     <h3 class="vacancy__title">${vacancy.title}</h3>
 
     <ul class="vacancy__fields">
-      <li class="vacancy__field">от ${parseInt(vacancy.salary).toLocaleString()}₽</li>
+      <li class="vacancy__field">от ${parseInt(
+        vacancy.salary,
+      ).toLocaleString()}₽</li>
       <li class="vacancy__field">${vacancy.type}</li>
       <li class="vacancy__field">${vacancy.format}</li>
       <li class="vacancy__field">${vacancy.experience}</li>
@@ -121,7 +125,9 @@ const renderError = (err) => {
 const createDetailVacancy = (data) => `
   <article class="detail">
     <div class="detail__header">
-      <img class="detail__logo" src="${API_URL}/${data.logo}" alt="Логотип компании ${data.company}">
+      <img class="detail__logo" src="${API_URL}/${
+  data.logo
+}" alt="Логотип компании ${data.company}">
 
       <p class="detail__company">${data.company}</p>
 
@@ -133,7 +139,9 @@ const createDetailVacancy = (data) => `
         <p>${data.description.replaceAll('\n', '</p><p>')}</p>
       </div>
       <ul class="detail__fields">
-        <li class="detail__field">от ${parseInt(data.salary).toLocaleString()}₽</li>
+        <li class="detail__field">от ${parseInt(
+          data.salary,
+        ).toLocaleString()}₽</li>
         <li class="detail__field">${data.type}</li>
         <li class="detail__field">${data.format}</li>
         <li class="detail__field">опыт ${data.experience}</li>
@@ -177,7 +185,10 @@ const sendTelegram = (modal) => {
 
 // Открытие модалки по нажатию Enter на карточке
 const openModalOnEnter = ({ code, target }) => {
-  if ((code === 'Enter' || code === 'NumpadEnter') && target.closest('.vacancy')) {
+  if (
+    (code === 'Enter' || code === 'NumpadEnter') &&
+    target.closest('.vacancy')
+  ) {
     const vacancyId = target.dataset.id;
     openModal(vacancyId);
     target.blur();
@@ -220,7 +231,9 @@ const renderModal = (data) => {
 
 const openModal = (id) => {
   preloader.add();
-  getData(`${API_URL}/${VACANCY_URL}/${id}`, renderModal, renderError).then(() => preloader.remove());
+  getData(`${API_URL}/${VACANCY_URL}/${id}`, renderModal, renderError).then(
+    () => preloader.remove(),
+  );
 };
 
 const observer = new IntersectionObserver(
@@ -237,7 +250,12 @@ const observer = new IntersectionObserver(
 );
 
 // Открытие/закрытие фильтра на мобилах
-const openFilter = (btn, dropDown, classNameBtnActive, classNameDropdownActive) => {
+const openFilter = (
+  btn,
+  dropDown,
+  classNameBtnActive,
+  classNameDropdownActive,
+) => {
   dropDown.style.height = `${dropDown.scrollHeight}px`;
   btn.classList.add(classNameBtnActive);
   dropDown.classList.add(classNameDropdownActive);
@@ -246,7 +264,12 @@ const openFilter = (btn, dropDown, classNameBtnActive, classNameDropdownActive) 
   }, 400);
 };
 
-const closeFilter = (btn, dropDown, classNameBtnActive, classNameDropdownActive) => {
+const closeFilter = (
+  btn,
+  dropDown,
+  classNameBtnActive,
+  classNameDropdownActive,
+) => {
   btn.classList.remove(classNameBtnActive);
   dropDown.classList.remove(classNameDropdownActive);
   dropDown.style.height = ``;
@@ -254,108 +277,257 @@ const closeFilter = (btn, dropDown, classNameBtnActive, classNameDropdownActive)
 };
 
 const init = () => {
-  const filterForm = document.querySelector('.filter__form');
-  const vacanciesFilterBtn = document.querySelector('.vacancies__filter-btn');
-  const vacanciesFilterList = document.querySelector('.vacancies__filter');
+  try {
+    const filterForm = document.querySelector('.filter__form');
+    const vacanciesFilterBtn = document.querySelector('.vacancies__filter-btn');
+    const vacanciesFilterList = document.querySelector('.vacancies__filter');
 
-  // Select city
-  const citySelect = document.querySelector('#city');
-  const cityChoices = new Choices(citySelect, {
-    searchEnabled: false,
-    itemSelectText: '',
-  });
-
-  const locationUrl = new URL(`${API_URL}/${LOCATION_URL}`);
-
-  getData(
-    locationUrl,
-    (locationData) => {
-      const locations = locationData.map((location) => ({ value: location }));
-      cityChoices.setChoices(locations, 'value', 'label', true);
-      placeholderItem = cityChoices._getTemplate('placeholder', 'Выбрать город');
-      cityChoices.itemList.append(placeholderItem);
-
-      filterForm.addEventListener('reset', (e) => {
-        if (!cityChoices.config.searchEnabled) {
-          cityChoices.removeActiveItems();
-          cityChoices.setChoiceByValue('');
-          cityChoices.itemList.append(placeholderItem);
-        } else {
-          cityChoices.itemList.append(placeholderItem);
-          cityChoices.setChoices(locations, 'value', 'label', true);
-        }
-        const urlWithParams = new URL(`${API_URL}/${VACANCY_URL}`);
-        urlWithParams.searchParams.set('limit', window.innerWidth < 768 ? 6 : 12);
-        urlWithParams.searchParams.set('page', 1);
-        getData(urlWithParams, renderVacancies, renderError).then(() => {
-          lastUrl = urlWithParams;
-        });
-      });
-    },
-    (err) => {
-      console.log(err);
-    },
-  );
-
-  // Cards
-  const cardsUrlWithParams = new URL(`${API_URL}/${VACANCY_URL}`);
-  cardsUrlWithParams.searchParams.set('limit', window.innerWidth < 768 ? 6 : 12);
-  cardsUrlWithParams.searchParams.set('page', 1);
-
-  getData(cardsUrlWithParams, renderVacancies, renderError).then(() => {
-    lastUrl = cardsUrlWithParams;
-  });
-
-  // Modal
-  // Открытие модалки по клику на карточку
-  cardsList.addEventListener('click', ({ target }) => {
-    const vacancyCard = target.closest('.vacancy');
-
-    if (vacancyCard) {
-      const vacancyId = vacancyCard.dataset.id;
-      openModal(vacancyId);
-      target.blur();
-    }
-  });
-
-  // Открытие модалки по нажатию Enter на карточке
-  cardsList.addEventListener('keydown', openModalOnEnter);
-
-  // Filter
-  vacanciesFilterBtn.addEventListener('click', () => {
-    if (vacanciesFilterBtn.classList.contains('vacancies__filter-btn_active')) {
-      closeFilter(vacanciesFilterBtn, vacanciesFilterList, 'vacancies__filter-btn_active', 'vacancies__filter_active');
-    } else {
-      openFilter(vacanciesFilterBtn, vacanciesFilterList, 'vacancies__filter-btn_active', 'vacancies__filter_active');
-    }
-  });
-
-  window.addEventListener('resize', (e) => {
-    if (vacanciesFilterBtn.classList.contains('vacancies__filter-btn_active')) {
-      // 1 вариант
-      // vacanciesFilterList.style.height = `${dropDown.scrollHeight}px`;
-      // 2 вариант
-      closeFilter(vacanciesFilterBtn, vacanciesFilterList, 'vacancies__filter-btn_active', 'vacancies__filter_active');
-    }
-  });
-
-  filterForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const formData = new FormData(filterForm);
-    const urlWithParams = new URL(`${API_URL}/${VACANCY_URL}`);
-
-    formData.forEach((value, key) => {
-      urlWithParams.searchParams.append(key, value);
+    // Select city
+    const citySelect = document.querySelector('#city');
+    const cityChoices = new Choices(citySelect, {
+      searchEnabled: false,
+      itemSelectText: '',
     });
 
-    getData(urlWithParams, renderVacancies, renderError)
-      .then(() => {
-        lastUrl = urlWithParams;
-      })
-      .then(() => {
-        closeFilter(vacanciesFilterBtn, vacanciesFilterList, 'vacancies__filter-btn_active', 'vacancies__filter_active');
+    const locationUrl = new URL(`${API_URL}/${LOCATION_URL}`);
+
+    getData(
+      locationUrl,
+      (locationData) => {
+        const locations = locationData.map((location) => ({ value: location }));
+        cityChoices.setChoices(locations, 'value', 'label', true);
+        placeholderItem = cityChoices._getTemplate(
+          'placeholder',
+          'Выбрать город',
+        );
+        cityChoices.itemList.append(placeholderItem);
+
+        filterForm.addEventListener('reset', (e) => {
+          if (!cityChoices.config.searchEnabled) {
+            cityChoices.removeActiveItems();
+            cityChoices.setChoiceByValue('');
+            cityChoices.itemList.append(placeholderItem);
+          } else {
+            cityChoices.itemList.append(placeholderItem);
+            cityChoices.setChoices(locations, 'value', 'label', true);
+          }
+          const urlWithParams = new URL(`${API_URL}/${VACANCY_URL}`);
+          urlWithParams.searchParams.set(
+            'limit',
+            window.innerWidth < 768 ? 6 : 12,
+          );
+          urlWithParams.searchParams.set('page', 1);
+          getData(urlWithParams, renderVacancies, renderError).then(() => {
+            lastUrl = urlWithParams;
+          });
+        });
+      },
+      (err) => {
+        console.log(err);
+      },
+    );
+
+    // Cards
+    const cardsUrlWithParams = new URL(`${API_URL}/${VACANCY_URL}`);
+    cardsUrlWithParams.searchParams.set(
+      'limit',
+      window.innerWidth < 768 ? 6 : 12,
+    );
+    cardsUrlWithParams.searchParams.set('page', 1);
+
+    getData(cardsUrlWithParams, renderVacancies, renderError).then(() => {
+      lastUrl = cardsUrlWithParams;
+    });
+
+    // Modal
+    // Открытие модалки по клику на карточку
+    cardsList.addEventListener('click', ({ target }) => {
+      const vacancyCard = target.closest('.vacancy');
+
+      if (vacancyCard) {
+        const vacancyId = vacancyCard.dataset.id;
+        openModal(vacancyId);
+        target.blur();
+      }
+    });
+
+    // Открытие модалки по нажатию Enter на карточке
+    cardsList.addEventListener('keydown', openModalOnEnter);
+
+    // Filter
+    vacanciesFilterBtn.addEventListener('click', () => {
+      if (
+        vacanciesFilterBtn.classList.contains('vacancies__filter-btn_active')
+      ) {
+        closeFilter(
+          vacanciesFilterBtn,
+          vacanciesFilterList,
+          'vacancies__filter-btn_active',
+          'vacancies__filter_active',
+        );
+      } else {
+        openFilter(
+          vacanciesFilterBtn,
+          vacanciesFilterList,
+          'vacancies__filter-btn_active',
+          'vacancies__filter_active',
+        );
+      }
+    });
+
+    window.addEventListener('resize', (e) => {
+      if (
+        vacanciesFilterBtn.classList.contains('vacancies__filter-btn_active')
+      ) {
+        // 1 вариант
+        // vacanciesFilterList.style.height = `${dropDown.scrollHeight}px`;
+        // 2 вариант
+        closeFilter(
+          vacanciesFilterBtn,
+          vacanciesFilterList,
+          'vacancies__filter-btn_active',
+          'vacancies__filter_active',
+        );
+      }
+    });
+
+    filterForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const formData = new FormData(filterForm);
+      const urlWithParams = new URL(`${API_URL}/${VACANCY_URL}`);
+
+      formData.forEach((value, key) => {
+        urlWithParams.searchParams.append(key, value);
       });
-  });
+
+      getData(urlWithParams, renderVacancies, renderError)
+        .then(() => {
+          lastUrl = urlWithParams;
+        })
+        .then(() => {
+          closeFilter(
+            vacanciesFilterBtn,
+            vacanciesFilterList,
+            'vacancies__filter-btn_active',
+            'vacancies__filter_active',
+          );
+        });
+    });
+  } catch (error) {
+    console.warn('error: ', error);
+    console.warn('Это не страница index.html');
+  }
+
+  try {
+    const validationForm = (form) => {
+      const validate = new JustValidate(form, {
+        focusInvalidField: true,
+        errorsContainer: document.querySelector('.employer__errors'),
+        errorLabelStyle: { color: 'red' },
+        errorFieldStyle: { outline: '1px solid red' },
+      });
+
+      validate
+        .addField('#logo', [
+          {
+            rule: 'minFilesCount',
+            value: 1,
+            errorMessage: 'Добавьте логотип',
+          },
+          {
+            rule: 'files',
+            value: {
+              files: {
+                extensions: ['jpeg', 'jpg', 'png'],
+                maxSize: 102400,
+                minSize: 1000,
+                types: ['image/jpeg', 'image/png'],
+              },
+            },
+            errorMessage: 'Размер файла не должен превышать 100 Кб',
+          },
+        ])
+        .addField('#company', [
+          {
+            rule: 'required',
+            errorMessage: 'Заполните поле "Название компании"',
+          },
+        ])
+        .addField('#title', [
+          {
+            rule: 'required',
+            errorMessage: 'Заполните поле "Название вакансии"',
+          },
+        ])
+        .addField('#salary', [
+          {
+            rule: 'required',
+            errorMessage: 'Заполните поле "Заработная плата"',
+          },
+        ])
+        .addField('#location', [
+          {
+            rule: 'required',
+            errorMessage: 'Заполните поле "Город"',
+          },
+        ])
+        .addField('#email', [
+          {
+            rule: 'required',
+            errorMessage: 'Заполните поле "E-mail"',
+          },
+          {
+            rule: 'email',
+            errorMessage: 'Некорректный формат e-mail',
+          },
+        ])
+        .addField('#description', [
+          {
+            rule: 'required',
+            errorMessage: 'Заполните поле "Описание вакансии"',
+          },
+        ])
+        .addRequiredGroup('#format', 'Выберите Формат')
+        .addRequiredGroup('#experience', 'Выберите Опыт работы')
+        .addRequiredGroup('#type', 'Выберите Занятость');
+    };
+
+    const fileController = () => {
+      const file = document.querySelector('.file');
+      const filePreview = file.querySelector('.file__preview');
+      const fileInput = file.querySelector('.file__input');
+
+      fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+          const src = URL.createObjectURL(e.target.files[0]);
+          file.classList.add('file_active');
+          filePreview.src = src;
+          filePreview.style.display = 'block';
+        } else {
+          file.classList.remove('file_active');
+          filePreview.src = './img/no-logo.jpg';
+          // filePreview.style.display = 'none';
+        }
+      });
+    };
+
+    const formController = () => {
+      const form = document.querySelector('.employer__form');
+
+      validationForm(form);
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        console.log('Sent');
+      });
+    };
+
+    formController();
+    fileController();
+  } catch (error) {
+    console.warn('error: ', error);
+    console.warn('Это не страница employer.html');
+  }
 };
 
 init();

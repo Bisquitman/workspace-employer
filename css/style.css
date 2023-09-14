@@ -841,6 +841,8 @@ fieldset {
   -webkit-box-pack: justify;
       -ms-flex-pack: justify;
           justify-content: space-between;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
   gap: 24px;
 }
 .header__logo-link {
@@ -856,6 +858,7 @@ fieldset {
 }
 .header__link {
   font-size: 20px;
+  text-align: center;
   padding: 12px 32px;
 }
 .header__link_o {
@@ -1224,8 +1227,8 @@ fieldset {
 .footer__developer-link {
   display: inline-block;
   position: relative;
-  -webkit-transition: color 0.3s;
-  transition: color 0.3s;
+  -webkit-transition: color 0.2s;
+  transition: color 0.2s;
 }
 .footer__developer-link::after {
   content: "";
@@ -1239,10 +1242,10 @@ fieldset {
           transform: scaleX(0);
   -webkit-transform-origin: bottom right;
           transform-origin: bottom right;
-  -webkit-transition: background-color 0.3s, -webkit-transform 0.3s;
-  transition: background-color 0.3s, -webkit-transform 0.3s;
-  transition: transform 0.3s, background-color 0.3s;
-  transition: transform 0.3s, background-color 0.3s, -webkit-transform 0.3s;
+  -webkit-transition: background-color 0.2s, -webkit-transform 0.2s;
+  transition: background-color 0.2s, -webkit-transform 0.2s;
+  transition: transform 0.2s, background-color 0.2s;
+  transition: transform 0.2s, background-color 0.2s, -webkit-transform 0.2s;
 }
 .footer__developer-link:hover {
   color: #a6adff;
@@ -1475,9 +1478,24 @@ fieldset {
 .employer__input:focus-visible {
   outline: 1px solid #a6adff;
 }
+.employer__input.just-validate-error-field {
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23B81111'%3E%3Ccircle cx='6' cy='6' r='4.5'/%3E%3Cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3E%3Ccircle cx='6' cy='8.2' r='.6' fill='%23B81111' stroke='none'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: calc(100% - 8px) 50%;
+  background-size: 16px;
+  outline: 1px solid red;
+}
+.employer__input.just-validate-error-field:focus {
+  outline: 1px solid red;
+  -webkit-box-shadow: 0 0 0 0.25rem rgba(255, 0, 0, 0.2509803922);
+          box-shadow: 0 0 0 0.25rem rgba(255, 0, 0, 0.2509803922);
+}
 .employer__textarea {
   min-height: 140px;
   resize: vertical;
+}
+.employer__textarea.just-validate-error-field {
+  background-position-y: 8px;
 }
 .employer__radiobuttons {
   display: grid;
@@ -1541,11 +1559,11 @@ fieldset {
   min-width: 280px;
   height: 80px;
   border-radius: 4px;
-  background-color: #fff;
   overflow: hidden;
 }
-.file__wrap-preview_active {
+.file_active .file__wrap-preview {
   min-width: auto;
+  background-color: transparent;
 }
 .file__wrap-btn {
   position: relative;
@@ -1830,18 +1848,23 @@ fieldset {
     padding: 24px 0 20px;
   }
   .header__container {
-    -ms-flex-wrap: wrap;
-        flex-wrap: wrap;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
     -webkit-box-pack: center;
         -ms-flex-pack: center;
             justify-content: center;
   }
   .header__links {
     width: 100%;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
   }
   .header__link {
     width: 100%;
-    text-align: center;
+    max-width: 290px;
   }
   .main {
     padding: 20px 0;

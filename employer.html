@@ -18,7 +18,7 @@
   <meta name="theme-color" content="#ffffff">
   <!-- Favicons -->
   <link href="./css/style.css" rel="stylesheet">
-  <script src="./js/choices.min.js" defer></script>
+  <script src="./js/just-validate.4.2.0.min.js" defer></script>
   <script src="./js/script.js" defer></script>
 </head>
 
@@ -26,7 +26,9 @@
   <header class="header">
     <div class="container header__container">
       <a class="header__logo-link" href="/"><img class="header__logo" src="./img/logo.svg" alt="Логотип сайта Work Space" width="137" height="24"></a>
-      <a class="header__link btn" href="./index.html#vacancies">Посмотреть вакансии</a>
+      <div class="header__links">
+        <a class="header__link btn" href="./index.html#vacancies">Посмотреть вакансии</a>
+      </div>
     </div>
   </header>
 
@@ -80,7 +82,7 @@
           </fieldset>
 
           <div class="employer__radiobuttons">
-            <fieldset class="employer__fieldset-radio">
+            <fieldset class="employer__fieldset-radio" id="format">
               <legend class="employer__label employer__legend">Формат</legend>
 
               <label class="employer__label-radio radio">
@@ -96,7 +98,7 @@
               </label>
             </fieldset>
 
-            <fieldset class="employer__fieldset-radio">
+            <fieldset class="employer__fieldset-radio" id="experience">
               <legend class="employer__label employer__legend">Опыт работы</legend>
 
               <label class="employer__label-radio radio">
@@ -116,7 +118,7 @@
               </label>
             </fieldset>
 
-            <fieldset class="employer__fieldset-radio">
+            <fieldset class="employer__fieldset-radio" id="type">
               <legend class="employer__label employer__legend">Занятость</legend>
 
               <label class="employer__label-radio radio">
@@ -139,9 +141,7 @@
 
           <div class="employer__wrap-submit">
             <button class="employer__submit-btn btn" type="submit">Добавить вакансию</button>
-            <div class="employer__errors">
-              <p>Ошибка. Заполните все поля</p>
-            </div>
+            <div class="employer__errors"></div>
           </div>
         </form>
       </div>
