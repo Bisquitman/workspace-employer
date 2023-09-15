@@ -54,7 +54,7 @@ const inputNumberFFPolyfill = () => {
     let value = '';
 
     inputElem.addEventListener('input', (e) => {
-      if (isNaN(parseInt(e.data))) {
+      if (isNaN(parseInt(e.data)) && e.data !== null) {
         e.target.value = value;
       }
       value = e.target.value;
@@ -173,9 +173,7 @@ const createDetailVacancy = (data) => `
           <button class="detail__btn btn">Отправить</button>
         </form>
         `
-    }
-
-    
+    }    
   </article>
 `;
 
@@ -520,9 +518,11 @@ const init = () => {
           this.on('addedfile', (file) => {
             setTimeout(() => {
               filePreview.src = file.dataURL;
+              console.log('file: ', file);
             }, 500);
             console.log('Файл получен');
             fileInput.files[0] = file;
+            console.log('fileInput.files: ', fileInput.files);
           });
         },
       });
@@ -596,7 +596,9 @@ const init = () => {
           form.reset();
         } catch (error) {
           preloader.remove();
-          document.querySelector('.employer__errors').textContent = `Произошла ошибка: ${error.message}`;
+          document.querySelector(
+            '.employer__errors',
+          ).textContent = `Произошла ошибка: ${error.message}`;
           console.error(error);
         }
       });
