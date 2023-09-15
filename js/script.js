@@ -1,4 +1,4 @@
-const API_URL = 'https://workspace-methed.vercel.app';
+const API_URL = 'https://wandering-curved-mapusaurus.glitch.me';
 const LOCATION_URL = 'api/locations';
 const VACANCY_URL = 'api/vacancy';
 const BOT_TOKEN = '6353166980:AAGNunOqz1Gw0DBwRob9Y5IfU-HWOKwJNdc';
@@ -47,7 +47,7 @@ const getData = async (url, cbSuccess, cbError) => {
   }
 };
 
-// ToDo Проверить, что браузер FireFox
+// Фикс бага с input type="number" для браузера Firefox
 const inputNumberFFPolyfill = () => {
   const inputNumberElems = document.querySelectorAll('[type="number"]');
   inputNumberElems.forEach((inputElem) => {
@@ -64,14 +64,18 @@ const inputNumberFFPolyfill = () => {
 
 const createCard = (vacancy) => `
   <article class="vacancy" tabindex="0" data-id=${vacancy.id}>
-    <img class="vacancy__img" src="${API_URL}/${vacancy.logo}" alt="Логотип компании ${vacancy.company}" height="44">
+    <img class="vacancy__img" src="${API_URL}/${
+  vacancy.logo
+}" alt="Логотип компании ${vacancy.company}" height="44">
 
     <p class="vacancy__company">${vacancy.company}</p>
 
     <h3 class="vacancy__title">${vacancy.title}</h3>
 
     <ul class="vacancy__fields">
-      <li class="vacancy__field">от ${parseInt(vacancy.salary).toLocaleString()}₽</li>
+      <li class="vacancy__field">от ${parseInt(
+        vacancy.salary,
+      ).toLocaleString()}₽</li>
       <li class="vacancy__field">${vacancy.type}</li>
       <li class="vacancy__field">${vacancy.format}</li>
       <li class="vacancy__field">${vacancy.experience}</li>
@@ -136,7 +140,9 @@ const renderError = (err) => {
 const createDetailVacancy = (data) => `
   <article class="detail">
     <div class="detail__header">
-      <img class="detail__logo" src="${API_URL}/${data.logo}" alt="Логотип компании ${data.company}">
+      <img class="detail__logo" src="${API_URL}/${
+  data.logo
+}" alt="Логотип компании ${data.company}">
 
       <p class="detail__company">${data.company}</p>
 
@@ -148,10 +154,12 @@ const createDetailVacancy = (data) => `
         <p>${data.description.replaceAll('\n', '</p><p>')}</p>
       </div>
       <ul class="detail__fields">
-        <li class="detail__field">от ${parseInt(data.salary).toLocaleString()}₽</li>
+        <li class="detail__field">от ${parseInt(
+          data.salary,
+        ).toLocaleString()}₽</li>
         <li class="detail__field">${data.type}</li>
         <li class="detail__field">${data.format}</li>
-        <li class="detail__field">опыт ${data.experience}</li>
+        <li class="detail__field">опыт: ${data.experience}</li>
         <li class="detail__field">${data.location}</li>
       </ul>
     </div>
@@ -192,7 +200,10 @@ const sendTelegram = (modal) => {
 
 // Открытие модалки по нажатию Enter на карточке
 const openModalOnEnter = ({ code, target }) => {
-  if ((code === 'Enter' || code === 'NumpadEnter') && target.closest('.vacancy')) {
+  if (
+    (code === 'Enter' || code === 'NumpadEnter') &&
+    target.closest('.vacancy')
+  ) {
     const vacancyId = target.dataset.id;
     openModal(vacancyId);
     target.blur();
@@ -235,7 +246,9 @@ const renderModal = (data) => {
 
 const openModal = (id) => {
   preloader.add();
-  getData(`${API_URL}/${VACANCY_URL}/${id}`, renderModal, renderError).then(() => preloader.remove());
+  getData(`${API_URL}/${VACANCY_URL}/${id}`, renderModal, renderError).then(
+    () => preloader.remove(),
+  );
 };
 
 const observer = new IntersectionObserver(
@@ -252,7 +265,12 @@ const observer = new IntersectionObserver(
 );
 
 // Открытие/закрытие фильтра на мобилах
-const openFilter = (btn, dropDown, classNameBtnActive, classNameDropdownActive) => {
+const openFilter = (
+  btn,
+  dropDown,
+  classNameBtnActive,
+  classNameDropdownActive,
+) => {
   dropDown.style.height = `${dropDown.scrollHeight}px`;
   btn.classList.add(classNameBtnActive);
   dropDown.classList.add(classNameDropdownActive);
@@ -261,7 +279,12 @@ const openFilter = (btn, dropDown, classNameBtnActive, classNameDropdownActive) 
   }, 400);
 };
 
-const closeFilter = (btn, dropDown, classNameBtnActive, classNameDropdownActive) => {
+const closeFilter = (
+  btn,
+  dropDown,
+  classNameBtnActive,
+  classNameDropdownActive,
+) => {
   btn.classList.remove(classNameBtnActive);
   dropDown.classList.remove(classNameDropdownActive);
   dropDown.style.height = ``;
@@ -288,7 +311,10 @@ const init = () => {
       (locationData) => {
         const locations = locationData.map((location) => ({ value: location }));
         cityChoices.setChoices(locations, 'value', 'label', true);
-        placeholderItem = cityChoices._getTemplate('placeholder', 'Выбрать город');
+        placeholderItem = cityChoices._getTemplate(
+          'placeholder',
+          'Выбрать город',
+        );
         cityChoices.itemList.append(placeholderItem);
 
         filterForm.addEventListener('reset', (e) => {
@@ -301,7 +327,10 @@ const init = () => {
             cityChoices.setChoices(locations, 'value', 'label', true);
           }
           const urlWithParams = new URL(`${API_URL}/${VACANCY_URL}`);
-          urlWithParams.searchParams.set('limit', window.innerWidth < 768 ? 6 : 12);
+          urlWithParams.searchParams.set(
+            'limit',
+            window.innerWidth < 768 ? 6 : 12,
+          );
           urlWithParams.searchParams.set('page', 1);
           getData(urlWithParams, renderVacancies, renderError).then(() => {
             lastUrl = urlWithParams;
@@ -315,7 +344,10 @@ const init = () => {
 
     // Cards
     const cardsUrlWithParams = new URL(`${API_URL}/${VACANCY_URL}`);
-    cardsUrlWithParams.searchParams.set('limit', window.innerWidth < 768 ? 6 : 12);
+    cardsUrlWithParams.searchParams.set(
+      'limit',
+      window.innerWidth < 768 ? 6 : 12,
+    );
     cardsUrlWithParams.searchParams.set('page', 1);
 
     getData(cardsUrlWithParams, renderVacancies, renderError).then(() => {
@@ -339,19 +371,38 @@ const init = () => {
 
     // Filter
     vacanciesFilterBtn.addEventListener('click', () => {
-      if (vacanciesFilterBtn.classList.contains('vacancies__filter-btn_active')) {
-        closeFilter(vacanciesFilterBtn, vacanciesFilterList, 'vacancies__filter-btn_active', 'vacancies__filter_active');
+      if (
+        vacanciesFilterBtn.classList.contains('vacancies__filter-btn_active')
+      ) {
+        closeFilter(
+          vacanciesFilterBtn,
+          vacanciesFilterList,
+          'vacancies__filter-btn_active',
+          'vacancies__filter_active',
+        );
       } else {
-        openFilter(vacanciesFilterBtn, vacanciesFilterList, 'vacancies__filter-btn_active', 'vacancies__filter_active');
+        openFilter(
+          vacanciesFilterBtn,
+          vacanciesFilterList,
+          'vacancies__filter-btn_active',
+          'vacancies__filter_active',
+        );
       }
     });
 
     window.addEventListener('resize', (e) => {
-      if (vacanciesFilterBtn.classList.contains('vacancies__filter-btn_active')) {
+      if (
+        vacanciesFilterBtn.classList.contains('vacancies__filter-btn_active')
+      ) {
         // 1 вариант
         // vacanciesFilterList.style.height = `${dropDown.scrollHeight}px`;
         // 2 вариант
-        closeFilter(vacanciesFilterBtn, vacanciesFilterList, 'vacancies__filter-btn_active', 'vacancies__filter_active');
+        closeFilter(
+          vacanciesFilterBtn,
+          vacanciesFilterList,
+          'vacancies__filter-btn_active',
+          'vacancies__filter_active',
+        );
       }
     });
 
@@ -369,7 +420,12 @@ const init = () => {
           lastUrl = urlWithParams;
         })
         .then(() => {
-          closeFilter(vacanciesFilterBtn, vacanciesFilterList, 'vacancies__filter-btn_active', 'vacancies__filter_active');
+          closeFilter(
+            vacanciesFilterBtn,
+            vacanciesFilterList,
+            'vacancies__filter-btn_active',
+            'vacancies__filter_active',
+          );
         });
     });
   } catch (error) {
@@ -460,12 +516,15 @@ const init = () => {
       let myDropzone = new Dropzone('.file__wrap-preview', {
         url: '/file/post',
         acceptedFiles: '.jpg, .jpeg, .png',
-      });
-
-      myDropzone.on('addedfile', (file) => {
-        console.log('Файл получен');
-        filePreview.src = file.dataURL;
-        fileInput.files[0] = file;
+        init: function () {
+          this.on('addedfile', (file) => {
+            setTimeout(() => {
+              filePreview.src = file.dataURL;
+            }, 500);
+            console.log('Файл получен');
+            fileInput.files[0] = file;
+          });
+        },
       });
 
       fileInput.addEventListener('change', (e) => {
@@ -483,13 +542,19 @@ const init = () => {
     };
 
     const showInvalidRadioTitle = () => {
-      const employerFieldsetRadioElems = document.querySelectorAll('.employer__fieldset-radio');
+      const employerFieldsetRadioElems = document.querySelectorAll(
+        '.employer__fieldset-radio',
+      );
 
       employerFieldsetRadioElems.forEach((employerFieldsetRadio) => {
-        const employerLegend = employerFieldsetRadio.querySelector('.employer__legend');
-        const employerRadioElems = employerFieldsetRadio.querySelectorAll('.radio__input');
+        const employerLegend =
+          employerFieldsetRadio.querySelector('.employer__legend');
+        const employerRadioElems =
+          employerFieldsetRadio.querySelectorAll('.radio__input');
 
-        const isInvalid = [...employerRadioElems].some((radio) => radio.classList.contains('just-validate-error-field'));
+        const isInvalid = [...employerRadioElems].some((radio) =>
+          radio.classList.contains('just-validate-error-field'),
+        );
 
         if (isInvalid) {
           employerLegend.style.color = 'red';
@@ -504,7 +569,7 @@ const init = () => {
 
       const validate = validationForm(form);
 
-      form.addEventListener('submit', (e) => {
+      form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
         if (!validate.isValid) {
@@ -513,7 +578,27 @@ const init = () => {
           return;
         }
 
-        console.log('Sent');
+        try {
+          const formData = new FormData(form);
+
+          preloader.add();
+          const response = await fetch(`${API_URL}/${VACANCY_URL}`, {
+            method: 'POST',
+            body: formData,
+          });
+
+          if (response.ok) {
+            preloader.remove();
+            window.location.href = '/';
+          }
+
+          console.log('Sent');
+          form.reset();
+        } catch (error) {
+          preloader.remove();
+          document.querySelector('.employer__errors').textContent = `Произошла ошибка: ${error.message}`;
+          console.error(error);
+        }
       });
     };
 
@@ -524,7 +609,11 @@ const init = () => {
     console.warn('Это не страница employer.html');
   }
 
-  inputNumberFFPolyfill();
+  // Включаем полифилл для поля с type="number" только если браузер - Firefox
+  if (navigator.userAgent.match(/Firefox/i)) {
+    console.log('Firefox');
+    inputNumberFFPolyfill();
+  }
 };
 
 init();
