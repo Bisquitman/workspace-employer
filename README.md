@@ -18,3 +18,5 @@
 - [Исходник](https://fs14.getcourse.ru/fileservice/file/download/a/251231/sc/313/h/6b9782ba87e83c87ebf89dfcdb6143c1.zip)
 - [EcssTractor](https://marketplace.visualstudio.com/items?itemName=diz.ecsstractor-port)
 - [JustValidate](https://just-validate.dev/)
+- [API](https://github.com/maksim-leskin/api_workspace)
+- [Glitch](https://glitch.com/)
