@@ -5,30 +5,36 @@ const BOT_TOKEN = '6353166980:AAGNunOqz1Gw0DBwRob9Y5IfU-HWOKwJNdc';
 
 const preloader = {
   add() {
-    document.head.insertAdjacentHTML(
-      'beforeend',
-      `<style id="preload">body{position:relative}.spinner-wrapper{position:fixed;top:0;left:0;height:100vh;width:100%;display:flex;align-items:center;justify-content:center;z-index:9999;background-color:rgba(255,255,255,.9)}.spinner{width:140px;text-align:center}.spinner>div{width:36px;height:36px;background-color:#a6adff;border-radius:100%;display:inline-block;-webkit-animation:bouncedelay 1.4s infinite ease-in-out;animation:bouncedelay 1.4s infinite ease-in-out;-webkit-animation-fill-mode:both;animation-fill-mode:both}.spinner .bounce1{-webkit-animation-delay:-.32s;animation-delay:-.32s}.spinner .bounce2{-webkit-animation-delay:-.16s;animation-delay:-.16s}@-webkit-keyframes bouncedelay{0%,100%,80%{-webkit-transform:scale(0)}40%{-webkit-transform:scale(1)}}@keyframes bouncedelay{0%,100%,80%{transform:scale(0);-webkit-transform:scale(0)}40%{transform:scale(1);-webkit-transform:scale(1)}}</style>`,
-    );
-    document.body.insertAdjacentHTML(
-      'afterbegin',
-      `
-      <div class="spinner-wrapper">
-        <div class="spinner">
-          <div class="bounce1"></div>
-          <div class="bounce2"></div>
-          <div class="bounce3"></div>
-        </div>
-      </div>
-    `,
-    );
+    if (!document.querySelector('.spinner-wrapper')) {
+      document.head.insertAdjacentHTML(
+        'beforeend',
+        `<style id="preload">body{position:relative}.spinner-wrapper{position:fixed;top:0;left:0;height:100vh;width:100%;display:flex;align-items:center;justify-content:center;z-index:9999;background-color:rgba(255,255,255,.9)}.spinner{width:140px;text-align:center}.spinner>div{width:36px;height:36px;background-color:#a6adff;border-radius:100%;display:inline-block;-webkit-animation:bouncedelay 1.4s infinite ease-in-out;animation:bouncedelay 1.4s infinite ease-in-out;-webkit-animation-fill-mode:both;animation-fill-mode:both}.spinner .bounce1{-webkit-animation-delay:-.32s;animation-delay:-.32s}.spinner .bounce2{-webkit-animation-delay:-.16s;animation-delay:-.16s}@-webkit-keyframes bouncedelay{0%,100%,80%{-webkit-transform:scale(0)}40%{-webkit-transform:scale(1)}}@keyframes bouncedelay{0%,100%,80%{transform:scale(0);-webkit-transform:scale(0)}40%{transform:scale(1);-webkit-transform:scale(1)}}</style>`,
+      );
+      document.body.insertAdjacentHTML(
+        'afterbegin',
+        `
+          <div class="spinner-wrapper">
+            <div class="spinner">
+              <div class="bounce1"></div>
+              <div class="bounce2"></div>
+              <div class="bounce3"></div>
+            </div>
+          </div>
+        `,
+      );
+    }
   },
   remove() {
-    setTimeout(() => {
-      const preload = document.querySelector('#preload');
-      const spinnerWrapper = document.querySelector('.spinner-wrapper');
-      preload.remove();
-      spinnerWrapper.remove();
-    }, 500);
+    if (document.querySelector('.spinner-wrapper')) {
+      try {
+        const preload = document.querySelector('#preload');
+        const spinnerWrapper = document.querySelector('.spinner-wrapper');
+        setTimeout(() => {
+          preload.remove();
+          spinnerWrapper.remove();
+        }, 500);
+      } catch {}
+    }
   },
 };
 
@@ -38,11 +44,13 @@ let lastUrl = '';
 const pagination = {};
 
 const getData = async (url, cbSuccess, cbError) => {
+  preloader.add();
   try {
     const response = await fetch(url);
     const data = await response.json();
     cbSuccess(data);
   } catch (error) {
+    preloader.remove();
     cbError(error);
   }
 };
@@ -64,18 +72,14 @@ const inputNumberFFPolyfill = () => {
 
 const createCard = (vacancy) => `
   <article class="vacancy" tabindex="0" data-id=${vacancy.id}>
-    <img class="vacancy__img" src="${API_URL}/${
-  vacancy.logo
-}" alt="Логотип компании ${vacancy.company}" height="44">
+    <img class="vacancy__img" src="${API_URL}/${vacancy.logo}" alt="Логотип компании ${vacancy.company}" height="44">
 
     <p class="vacancy__company">${vacancy.company}</p>
 
     <h3 class="vacancy__title">${vacancy.title}</h3>
 
     <ul class="vacancy__fields">
-      <li class="vacancy__field">от ${parseInt(
-        vacancy.salary,
-      ).toLocaleString()}₽</li>
+      <li class="vacancy__field">от ${parseInt(vacancy.salary).toLocaleString()}₽</li>
       <li class="vacancy__field">${vacancy.type}</li>
       <li class="vacancy__field">${vacancy.format}</li>
       <li class="vacancy__field">${vacancy.experience}</li>
@@ -94,11 +98,8 @@ const createCards = (data) => {
 
 const renderVacancies = (data) => {
   cardsList.textContent = '';
-  preloader.add();
   const cards = createCards(data);
   cardsList.append(...cards);
-
-  preloader.remove();
 
   if (data.pagination) {
     Object.assign(pagination, data.pagination);
@@ -127,9 +128,9 @@ const loadMoreVacancies = () => {
     urlWithParams.searchParams.set('page', pagination.currentPage + 1);
     urlWithParams.searchParams.set('limit', window.innerWidth < 768 ? 6 : 12);
 
-    getData(urlWithParams, renderMoreVacancies, renderError).then(() => {
-      lastUrl = urlWithParams;
-    });
+    getData(urlWithParams, renderMoreVacancies, renderError)
+      .then(() => (lastUrl = urlWithParams))
+      .finally(() => preloader.remove());
   }
 };
 
@@ -140,9 +141,7 @@ const renderError = (err) => {
 const createDetailVacancy = (data) => `
   <article class="detail">
     <div class="detail__header">
-      <img class="detail__logo" src="${API_URL}/${
-  data.logo
-}" alt="Логотип компании ${data.company}">
+      <img class="detail__logo" src="${API_URL}/${data.logo}" alt="Логотип компании ${data.company}">
 
       <p class="detail__company">${data.company}</p>
 
@@ -154,9 +153,7 @@ const createDetailVacancy = (data) => `
         <p>${data.description.replaceAll('\n', '</p><p>')}</p>
       </div>
       <ul class="detail__fields">
-        <li class="detail__field">от ${parseInt(
-          data.salary,
-        ).toLocaleString()}₽</li>
+        <li class="detail__field">от ${parseInt(data.salary).toLocaleString()}₽</li>
         <li class="detail__field">${data.type}</li>
         <li class="detail__field">${data.format}</li>
         <li class="detail__field">опыт: ${data.experience}</li>
@@ -198,10 +195,7 @@ const sendTelegram = (modal) => {
 
 // Открытие модалки по нажатию Enter на карточке
 const openModalOnEnter = ({ code, target }) => {
-  if (
-    (code === 'Enter' || code === 'NumpadEnter') &&
-    target.closest('.vacancy')
-  ) {
+  if ((code === 'Enter' || code === 'NumpadEnter') && target.closest('.vacancy')) {
     const vacancyId = target.dataset.id;
     openModal(vacancyId);
     target.blur();
@@ -243,10 +237,7 @@ const renderModal = (data) => {
 };
 
 const openModal = (id) => {
-  preloader.add();
-  getData(`${API_URL}/${VACANCY_URL}/${id}`, renderModal, renderError).then(
-    () => preloader.remove(),
-  );
+  getData(`${API_URL}/${VACANCY_URL}/${id}`, renderModal, renderError).finally(() => preloader.remove());
 };
 
 const observer = new IntersectionObserver(
@@ -263,12 +254,7 @@ const observer = new IntersectionObserver(
 );
 
 // Открытие/закрытие фильтра на мобилах
-const openFilter = (
-  btn,
-  dropDown,
-  classNameBtnActive,
-  classNameDropdownActive,
-) => {
+const openFilter = (btn, dropDown, classNameBtnActive, classNameDropdownActive) => {
   dropDown.style.height = `${dropDown.scrollHeight}px`;
   btn.classList.add(classNameBtnActive);
   dropDown.classList.add(classNameDropdownActive);
@@ -277,12 +263,7 @@ const openFilter = (
   }, 400);
 };
 
-const closeFilter = (
-  btn,
-  dropDown,
-  classNameBtnActive,
-  classNameDropdownActive,
-) => {
+const closeFilter = (btn, dropDown, classNameBtnActive, classNameDropdownActive) => {
   btn.classList.remove(classNameBtnActive);
   dropDown.classList.remove(classNameDropdownActive);
   dropDown.style.height = ``;
@@ -303,16 +284,12 @@ const init = () => {
     });
 
     const locationUrl = new URL(`${API_URL}/${LOCATION_URL}`);
-
     getData(
       locationUrl,
       (locationData) => {
         const locations = locationData.map((location) => ({ value: location }));
         cityChoices.setChoices(locations, 'value', 'label', true);
-        placeholderItem = cityChoices._getTemplate(
-          'placeholder',
-          'Выбрать город',
-        );
+        placeholderItem = cityChoices._getTemplate('placeholder', 'Выбрать город');
         cityChoices.itemList.append(placeholderItem);
 
         filterForm.addEventListener('reset', (e) => {
@@ -325,32 +302,27 @@ const init = () => {
             cityChoices.setChoices(locations, 'value', 'label', true);
           }
           const urlWithParams = new URL(`${API_URL}/${VACANCY_URL}`);
-          urlWithParams.searchParams.set(
-            'limit',
-            window.innerWidth < 768 ? 6 : 12,
-          );
+          urlWithParams.searchParams.set('limit', window.innerWidth < 768 ? 6 : 12);
           urlWithParams.searchParams.set('page', 1);
-          getData(urlWithParams, renderVacancies, renderError).then(() => {
-            lastUrl = urlWithParams;
-          });
+          getData(urlWithParams, renderVacancies, renderError)
+            .then(() => (lastUrl = urlWithParams))
+            .finally(() => preloader.remove());
         });
       },
       (err) => {
+        preloader.remove();
         console.log(err);
       },
-    );
+    ).finally(() => preloader.remove());
 
     // Cards
     const cardsUrlWithParams = new URL(`${API_URL}/${VACANCY_URL}`);
-    cardsUrlWithParams.searchParams.set(
-      'limit',
-      window.innerWidth < 768 ? 6 : 12,
-    );
+    cardsUrlWithParams.searchParams.set('limit', window.innerWidth < 768 ? 6 : 12);
     cardsUrlWithParams.searchParams.set('page', 1);
 
-    getData(cardsUrlWithParams, renderVacancies, renderError).then(() => {
-      lastUrl = cardsUrlWithParams;
-    });
+    getData(cardsUrlWithParams, renderVacancies, renderError)
+      .then(() => (lastUrl = cardsUrlWithParams))
+      .finally(() => preloader.remove());
 
     // Modal
     // Открытие модалки по клику на карточку
@@ -369,38 +341,19 @@ const init = () => {
 
     // Filter
     vacanciesFilterBtn.addEventListener('click', () => {
-      if (
-        vacanciesFilterBtn.classList.contains('vacancies__filter-btn_active')
-      ) {
-        closeFilter(
-          vacanciesFilterBtn,
-          vacanciesFilterList,
-          'vacancies__filter-btn_active',
-          'vacancies__filter_active',
-        );
+      if (vacanciesFilterBtn.classList.contains('vacancies__filter-btn_active')) {
+        closeFilter(vacanciesFilterBtn, vacanciesFilterList, 'vacancies__filter-btn_active', 'vacancies__filter_active');
       } else {
-        openFilter(
-          vacanciesFilterBtn,
-          vacanciesFilterList,
-          'vacancies__filter-btn_active',
-          'vacancies__filter_active',
-        );
+        openFilter(vacanciesFilterBtn, vacanciesFilterList, 'vacancies__filter-btn_active', 'vacancies__filter_active');
       }
     });
 
     window.addEventListener('resize', (e) => {
-      if (
-        vacanciesFilterBtn.classList.contains('vacancies__filter-btn_active')
-      ) {
+      if (vacanciesFilterBtn.classList.contains('vacancies__filter-btn_active')) {
         // 1 вариант
         // vacanciesFilterList.style.height = `${dropDown.scrollHeight}px`;
         // 2 вариант
-        closeFilter(
-          vacanciesFilterBtn,
-          vacanciesFilterList,
-          'vacancies__filter-btn_active',
-          'vacancies__filter_active',
-        );
+        closeFilter(vacanciesFilterBtn, vacanciesFilterList, 'vacancies__filter-btn_active', 'vacancies__filter_active');
       }
     });
 
@@ -414,17 +367,9 @@ const init = () => {
       });
 
       getData(urlWithParams, renderVacancies, renderError)
-        .then(() => {
-          lastUrl = urlWithParams;
-        })
-        .then(() => {
-          closeFilter(
-            vacanciesFilterBtn,
-            vacanciesFilterList,
-            'vacancies__filter-btn_active',
-            'vacancies__filter_active',
-          );
-        });
+        .then(() => (lastUrl = urlWithParams))
+        .then(() => closeFilter(vacanciesFilterBtn, vacanciesFilterList, 'vacancies__filter-btn_active', 'vacancies__filter_active'))
+        .finally(() => preloader.remove());
     });
   } catch (error) {
     console.warn('error: ', error);
@@ -542,19 +487,13 @@ const init = () => {
     };
 
     const showInvalidRadioTitle = () => {
-      const employerFieldsetRadioElems = document.querySelectorAll(
-        '.employer__fieldset-radio',
-      );
+      const employerFieldsetRadioElems = document.querySelectorAll('.employer__fieldset-radio');
 
       employerFieldsetRadioElems.forEach((employerFieldsetRadio) => {
-        const employerLegend =
-          employerFieldsetRadio.querySelector('.employer__legend');
-        const employerRadioElems =
-          employerFieldsetRadio.querySelectorAll('.radio__input');
+        const employerLegend = employerFieldsetRadio.querySelector('.employer__legend');
+        const employerRadioElems = employerFieldsetRadio.querySelectorAll('.radio__input');
 
-        const isInvalid = [...employerRadioElems].some((radio) =>
-          radio.classList.contains('just-validate-error-field'),
-        );
+        const isInvalid = [...employerRadioElems].some((radio) => radio.classList.contains('just-validate-error-field'));
 
         if (isInvalid) {
           employerLegend.style.color = 'red';
@@ -596,9 +535,7 @@ const init = () => {
           form.reset();
         } catch (error) {
           preloader.remove();
-          document.querySelector(
-            '.employer__errors',
-          ).textContent = `Произошла ошибка: ${error.message}`;
+          document.querySelector('.employer__errors').textContent = `Произошла ошибка: ${error.message}`;
           console.error(error);
         }
       });
